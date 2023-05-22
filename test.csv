@@ -1,0 +1,4 @@
+MAC address,hostname,IPv4,IPv6,netmask,user login,full user name,email,ssh private key,ssh public key,description host,list of installed apps,UUID
+00:11:22:33:44:55,host1,null,null,255.255.255.0,user1,John Doe,johndoe@example.com,/path/to/private_key,/path/to/public_key,Web server,"App1, App2, App3",123e4567-e89b-12d3-a456-426655440000
+AA:BB:CC:DD:EE:FF,host2,null,null,192.168.1.0/24,user2,Jane Smith,janesmith@example.com,/path/to/private_key2,/path/to/public_key2,Database server,"App4, App5, App6",987e6543-21dc-ba98-c654-321456789012
+11:22:33:44:55:66,host3,null,null,10.0.0.0/8,user3,Robert Johnson,robertjohnson@example.com,/path/to/private_key3,/path/to/public_key3,File server,"App7, App8, App9",789abcde-4567-89de-f012-3456789abcde
