@@ -2,22 +2,33 @@ import csv
 import re
 import json
 import argparse
-
+  
+# При возникновении ошибки канонического формата CSV файла, скрипт будет выводить сообщение об ошибке и попытается получить содержимое файла в виде списка строк file_content.       
 def import_data(file_path, delimiter=',', has_header=True):
-    with open(file_path, 'r') as file:
-        if delimiter == 'tsv':
-            delimiter = '\t'
-        elif delimiter == 'dsv':
-            delimiter = ';'
+    try:
+        with open(file_path, 'r') as file:
+            if delimiter == 'tsv':
+                delimiter = '\t'
+            elif delimiter == 'dsv':
+                delimiter = ';'
 
-        reader = csv.reader(file, delimiter=delimiter)
-        data = list(reader)
-        if has_header:
-            header = data[0]
-            data = data[1:]
-            return header, data
-        else:
-            return None, data
+            reader = csv.reader(file, delimiter=delimiter)
+            data = list(reader)
+            if has_header:
+                header = data[0]
+                data = data[1:]
+                return header, data
+            else:
+                return None, data
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"Error: {e}")
+        return None, None
+    except csv.Error as e:
+        print(f"CSV format error: {e}")
+        file_content = []
+        with open(file_path, 'r') as file:
+            file_content = file.readlines()
+        return None, file_content
 
 def export_data(file_path, data, delimiter=',', header=None):
     with open(file_path, 'w', newline='') as file:
