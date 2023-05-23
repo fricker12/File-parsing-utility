@@ -54,11 +54,21 @@ def filter_data_multiple_regex(data, columns, patterns):
             filtered_data.append(row)
     return filtered_data
 
-def extract_rows(data, ranges):
+def extract_rows(data, ranges, join_rows=False):
     extracted_data = []
     for start, end in ranges:
         extracted_data.extend(data[start-1:end])
-    return extracted_data
+    if join_rows:
+        return [' '.join(row) for row in extracted_data]
+    else:
+        return extracted_data
+    
+def get_field_data(data, column, join=False):
+    field_data = [row[column] for row in data]
+    if join:
+        return ' '.join(field_data)
+    else:
+        return field_data
 
 def extract_columns(data, columns):
     extracted_data = []
@@ -91,6 +101,8 @@ def main():
     parser.add_argument('--extract-columns', nargs='+', type=int, metavar='column',
                         help='Extract specified columns and print the result')
     parser.add_argument('--export', metavar='output_file', help='Export data to a CSV file')
+    parser.add_argument('--get-field-data', nargs=2, metavar=('column', 'format'),
+                        help='Get data from a specific column in the chosen format (single/multi-string)')
 
     args = parser.parse_args()
 
@@ -125,9 +137,9 @@ def main():
     
     if args.extract_rows:
         ranges = [(start, end) for start, end in zip(args.extract_rows[::2], args.extract_rows[1::2])]
-        # Обработка фрагмента файла: извлечение строк по диапазонам
-        extracted_rows = extract_rows(data, ranges)
+        extracted_rows = extract_rows(data, ranges, join_rows=True)
         print(extracted_rows)
+    
     
     if args.extract_columns:
         # Обработка фрагмента файла: извлечение столбцов
@@ -137,6 +149,18 @@ def main():
     if args.export:
         # Экспорт данных в CSV
         export_data(args.export, data, delimiter=delimiter, header=header)
+        
+     # Получения данных полей в формате одиночной строки (--get-field-data <column> single) или множества строк (--get-field-data <column> multi).  
+    if args.get_field_data:
+        column, format = args.get_field_data
+        if format == 'single':
+            field_data = get_field_data(data, int(column), join=True)
+            print(field_data)
+        elif format == 'multi':
+            field_data = get_field_data(data, int(column), join=False)
+            print(field_data)
+        else:
+            print("Invalid format. Please choose 'single' or 'multi'.")
 
     # Преобразование CSV в JSON
     json_data = json.dumps(data)
